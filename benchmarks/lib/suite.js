@@ -15,7 +15,7 @@ function suite(name, iterations, callback) {
 
     console.log("# " + name)
     callback(benchmark)
-    printResult(iterations, results)
+    printResult(results)
 
     function benchmark(name, _iterations, callback) {
         if (typeof _iterations === "function") {
@@ -26,13 +26,14 @@ function suite(name, iterations, callback) {
         iterations = _iterations || iterations
         var time = bench(callback, iterations)
 
-        results.push([name, time])
+        results.push([name, time, iterations])
     }
 }
 
-function printResult(iterations, results) {
+function printResult(results) {
     results.forEach(function (result) {
         var time = result[1]
+        var iterations = result[2]
         // console.log("time?", time)
         var frequency = Math.round(iterations / (time / 1000)) + ""
         var hz = formatNumber(frequency)

@@ -7,15 +7,14 @@ var SPEED = 2.0
 suite("region query 100 out of 900", function (benchmark) {
     var db = createDB({ width: 30, height: 30, size: 10 })
 
-    benchmark("naive", 3500 * SPEED, function () {
-        db.region("naive", SurfaceDB.Rectangle({
-            x: 20,
-            y: 20,
-            width: 1,
-            height: 1
-        }), function (err, results) {
-            assert.ifError(err)
-            assert.equal(results.length, 100)
+    benchmark("naive", 3200 * SPEED, function () {
+        query(db, "naive", {
+            width: 1, height: 1, size: 100
+        })
+    })
+    benchmark("bucket", 5000 * SPEED, function () {
+        query(db, "bucket", {
+            width: 1, height: 1, size: 400
         })
     })
 })
@@ -23,15 +22,14 @@ suite("region query 100 out of 900", function (benchmark) {
 suite("region query 900 out of 900", function (benchmark) {
     var db = createDB({ width: 30, height: 30, size: 10 })
 
-    benchmark("naive", 3500 * SPEED, function () {
-        db.region("naive", SurfaceDB.Rectangle({
-            x: 0,
-            y: 0,
-            width: 30,
-            height: 30
-        }), function (err, results) {
-            assert.ifError(err)
-            assert.equal(results.length, 900)
+    benchmark("naive", 2500 * SPEED, function () {
+        query(db, "naive", {
+            x: 0, y: 0, width: 30, height: 30, size: 900
+        })
+    })
+    benchmark("bucket", 2200 * SPEED, function () {
+        query(db, "bucket", {
+            x: 0, y: 0, width: 30, height: 30, size: 900
         })
     })
 })
@@ -39,15 +37,14 @@ suite("region query 900 out of 900", function (benchmark) {
 suite("region query 400 out of 3600", function (benchmark) {
     var db = createDB({ width: 60, height: 60, size: 10 })
 
-    benchmark("naive", 900 * SPEED, function () {
-        db.region("naive", SurfaceDB.Rectangle({
-            x: 20,
-            y: 20,
-            width: 11,
-            height: 11
-        }), function (err, results) {
-            assert.ifError(err)
-            assert.equal(results.length, 400)
+    benchmark("naive", 600 * SPEED, function () {
+        query(db, "naive", {
+            width: 11, height: 11, size: 400
+        })
+    })
+    benchmark("bucket", 2400 * SPEED, function () {
+        query(db, "bucket", {
+            width: 11, height: 11, size: 700
         })
     })
 })
@@ -55,15 +52,29 @@ suite("region query 400 out of 3600", function (benchmark) {
 suite("region query 2500 out of 3600", function (benchmark) {
     var db = createDB({ width: 60, height: 60, size: 10 })
 
-    benchmark("naive", 800 * SPEED, function () {
-        db.region("naive", SurfaceDB.Rectangle({
-            x: 0,
-            y: 0,
-            width: 50,
-            height: 50
-        }), function (err, results) {
-            assert.ifError(err)
-            assert.equal(results.length, 2500)
+    benchmark("naive", 600 * SPEED, function () {
+        query(db, "naive", {
+            x: 0, y: 0, width: 50, height: 50, size: 2500
+        })
+    })
+    benchmark("bucket", 450 * SPEED, function () {
+        query(db, "bucket", {
+            x: 0, y: 0, width: 50, height: 50, size: 3600
+        })
+    })
+})
+
+suite("region query 150 out of 10000", function (benchmark) {
+    var db = createDB({ width: 100, height: 100, size: 10 })
+
+    benchmark("naive", 150 * SPEED, function () {
+        query(db, "naive", {
+            width: 4, height: 4, size: 169
+        })
+    })
+    benchmark("bucket", 2500 * SPEED, function () {
+        query(db, "bucket", {
+            width: 4, height: 4, size: 700
         })
     })
 })
@@ -71,15 +82,14 @@ suite("region query 2500 out of 3600", function (benchmark) {
 suite("region query 1000 out of 10000", function (benchmark) {
     var db = createDB({ width: 100, height: 100, size: 10 })
 
-    benchmark("naive", 300 * SPEED, function () {
-        db.region("naive", SurfaceDB.Rectangle({
-            x: 20,
-            y: 20,
-            width: 22,
-            height: 22
-        }), function (err, results) {
-            assert.ifError(err)
-            assert.equal(results.length, 961)
+    benchmark("naive", 150 * SPEED, function () {
+        query(db, "naive", {
+            width: 22, height: 22, size: 961
+        })
+    })
+    benchmark("bucket", 750 * SPEED, function () {
+        query(db, "bucket", {
+            width: 22, height: 22, size: 2300
         })
     })
 })
@@ -87,22 +97,40 @@ suite("region query 1000 out of 10000", function (benchmark) {
 suite("region query 8000 out of 10000", function (benchmark) {
     var db = createDB({ width: 100, height: 100, size: 10 })
 
-    benchmark("naive", 250 * SPEED, function () {
-        db.region("naive", SurfaceDB.Rectangle({
-            x: 20,
-            y: 20,
-            width: 80,
-            height: 80
-        }), function (err, results) {
-            assert.ifError(err)
-            assert.equal(results.length, 7921)
+    benchmark("naive", 150 * SPEED, function () {
+        query(db, "naive", {
+            width: 80, height: 80, size: 7921
+        })
+    })
+    benchmark("bucket", 150 * SPEED, function () {
+        query(db, "bucket", {
+            width: 80, height: 80, size: 7900
         })
     })
 })
 
+function query(db, name, opts) {
+    db.region(name, SurfaceDB.Rectangle({
+        x: "x" in opts ? opts.x : 20,
+        y: "y" in opts ? opts.y : 20,
+        width: opts.width,
+        height: opts.height
+    }), function (err, results) {
+        assert.ifError(err)
+
+        if (opts.size) {
+            assert.equal(results.length, opts.size)
+        } else {
+            console.log("length", results.length)
+        }
+    })
+}
+
 function createDB(opts) {
     var db = SurfaceDB({
-        layers: { "naive": "naive" }
+        layers: {
+            "naive": "naive"
+        }
     })
 
     var surfaces = []
@@ -117,7 +145,13 @@ function createDB(opts) {
         }
     }
 
+    db.addLayer("bucket", {
+        sceneGraph: "bucket",
+        size: 20
+    })
+
     db.insert("naive", surfaces)
+    db.insert("bucket", surfaces)
 
     return db
 }
