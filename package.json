@@ -25,7 +25,8 @@
     "format-number": "0.0.0",
     "ecstatic": "~0.4.5",
     "serve-browserify": "~0.3.3",
-    "observ": "~0.1.0"
+    "observ": "~0.1.0",
+    "tape": "~1.0.4"
   },
   "licenses": [
     {
@@ -35,9 +36,7 @@
   ],
   "scripts": {
     "test": "node ./test/index.js",
-    "build": "browserify ./examples/index.js | indexhtmlify > ./examples/index.html",
-    "watch": "yawatch ./examples/index.js --on-any='npm run build'",
-    "open": "google-chrome ./examples/index.html",
+    "open": "google-chrome localhost:8000",
     "bench": "node ./benchmarks/index.js",
     "start": "node ./examples/server.js"
   },
