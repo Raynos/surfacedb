@@ -118,8 +118,8 @@ function BucketLayer(opts) {
     }
 
     function bucketIndex(x, y) {
-        var k1 = x >= 0 ? (x / bucketSize) >>> 0 : (x / bucketSize) - 1
-        var k2 = y >= 0 ? (y / bucketSize) >>> 0 : (y / bucketSize) - 1
+        var k1 = x >= 0 ? (x / bucketSize) >> 0 : (x / bucketSize) - 1
+        var k2 = y >= 0 ? (y / bucketSize) >> 0 : (y / bucketSize) - 1
         return ((k1 + k2) * (k1 + k2 + 1)) + k2
     }
 
@@ -131,7 +131,7 @@ function BucketLayer(opts) {
         }).filter(function (surface) {
             return pointInSurface(opts, surface)
         }))
-    }
+    }   
 
     function region(surfaces, callback) {
         var query
