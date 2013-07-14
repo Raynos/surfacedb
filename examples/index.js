@@ -10,7 +10,7 @@ var SurfaceDB = require("../index.js")
 var WIDTH = 640
 var HEIGHT = 320
 var SPEED = 5
-var SIZE = 64
+var SIZE = 32
 
 var db = window.db = SurfaceDB()
 var app = App(db)
@@ -18,7 +18,9 @@ document.body.appendChild(app.view)
 
 function App(db) {
     // create layer for screen
-    var main = db.addLayer("main", { sceneGraph: "bucket" })
+    var main = db.addLayer("main", {
+        sceneGraph: "naive"
+    })
 
     // create surfaces for layer
     var surfaces = createTerrain({ size: SIZE })

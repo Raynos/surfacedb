@@ -1,4 +1,5 @@
 var noise = require("perlin").noise
+var uuid = require("uuid")
 
 var SurfaceDB = require("../../index.js")
 
@@ -13,25 +14,23 @@ function createSurfaces(opts) {
     var size = opts.size || 64
 
     var surfaces = []
-    for (var i = 0; i < 40; i++) {
-        for (var j = 0; j < 40; j++) {
-            var r = Math.floor(Math.random() * 256)
-            var g = Math.floor(Math.random() * 256)
-            var b = Math.floor(Math.random() * 256)
+    var chunks = perlinTerrain(uuid())({ x: -100, y: 0 }, 200)
+
+    for (var i = 0; i < chunks.length; i++) {
+        var grassPoint = chunks[i]
+        for (var j = -20; j < 20; j++) {
+            var color = j < grassPoint.y ? DIRT_COLOR :
+                j > grassPoint.y ? SKY_COLOR : GRASS_COLOR
 
             surfaces.push(SurfaceDB.Rectangle({
-                x: i * size,
-                y: j * size,
+                x: grassPoint.x * size,
+                y: -(j * size),
                 width: size,
                 height: size,
-                meta: {
-                    color: "rgb(" + r + "," + g + "," + b + ")"
-                }
+                meta: { color: color }
             }))
         }
     }
-
-    perlinTerrain("fawfwafwaf")({ x: 0, y: 0 }, 20)
 
     return surfaces
 }
@@ -43,21 +42,17 @@ function perlinTerrain(seed, floor, ceiling, divisor) {
     noise.seed(seed)
 
     return function generateChunk(position, width) {
-        var surfaces = []
-        var startX = position.x * width
-        var startY = position.y * width
+        var line = Math.floor(Math.random() * 1000)
+        var chunks = []
+        var startX = position.x
 
         for (var x = startX; x < startX + width; x++) {
-            var n = noise.simplex2(x / divisor, 0)
+            var n = noise.simplex2(x / divisor, line)
             var y = ~~scale(n, -1, 1, floor, ceiling)
-            if (y === floor || startY < y && y < startY + width) {
-                var xidx = Math.abs((width + x % width) % width)
-                var yidx = Math.abs((width + y % width) % width)
-                console.log("x", x, "y", y, "xidx", xidx, "yidx", yidx)
-            }
+            chunks.push({ x: x, y: y })
         }
 
-        return surfaces
+        return chunks
     }
 }
 

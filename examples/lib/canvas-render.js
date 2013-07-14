@@ -25,20 +25,22 @@ function CanvasRender(db, opts, screen) {
         }
 
         var screenSurface = screen()
-        context.clearRect(0, 0, 640, 320)
+        // console.log("clearing", opts.width, opts.height)
+        context.clearRect(0, 0, opts.width, opts.height)
 
         for (var i = 0; i < surfaces.length; i++) {
             var surface = surfaces[i]
-            var x = surface.points[0].x - screenSurface.meta.x
-            var y = surface.points[0].y - screenSurface.meta.y
-            var width = surface.points[3].x - surface.points[0].x
-            var height = surface.points[2].y - surface.points[0].y
+            var x = surface.meta.x - screenSurface.meta.x
+            var y = surface.meta.y - screenSurface.meta.y
+            var width = surface.meta.width
+            var height = surface.meta.height
 
             context.fillStyle = surface.meta.color
             context.fillRect(x, y, width, height)
+            // console.log("placing things in", x, y)
 
             context.strokeStyle = "rgb(0, 0, 0)"
-            context.strokeRect(x,y,width,height)
+            context.strokeRect(x,y, width, height)
         }
 
         window.requestAnimationFrame(ondraw)
