@@ -4,7 +4,7 @@ var uuid = require("uuid")
 module.exports = BucketLayer
 
 function BucketLayer(opts) {
-    var buckets = {}
+    var buckets = []
     var items = {}
     var bucketSize = opts.size || 32
 
@@ -17,26 +17,35 @@ function BucketLayer(opts) {
     }
 
     function insert(surfaces, callback) {
-        surfaces.forEach(function (surface) {
+        var surface,
+            bb,
+            index,
+            lastIndex,
+            bucket,
+            b, i, x, y
+
+        for (i = 0; i < surfaces.length; i += 1) {
+            surface = surfaces[i]
             surface.id = surface.id || uuid()
             items[surface.id] = surface
 
-            var bb = surface.meta.bb
-            var index = bucketIndex(bb.min.y, bb.min.y)
-            var lastIndex = bucketIndex(bb.max.x, bb.max.y)
+            bb = surface.meta.bb
+            index = bucketIndex(bb.min.y, bb.min.y)
+            lastIndex = bucketIndex(bb.max.x, bb.max.y)
 
-            var bucket, b
-
-            for (var x = bb.min.x; x < bb.max.x; x += bucketSize) {
-                for (var y = bb.min.y; y < bb.max.y; y += bucketSize) {
+            for (x = bb.min.x; x < bb.max.x; x += bucketSize) {
+                for (y = bb.min.y; y < bb.max.y; y += bucketSize) {
                     index = bucketIndex(x, y)
                     bucket = buckets[index]
                     if (bucket) {
                         bucket[surface.id] = true
+                        bucket.keys.push(surface.id)
                     } else {
-                        b = {}
+                        b = {
+                            keys: [surface.id]
+                        }
                         b[surface.id] = true
-                        buckets[index] = b
+                        buckets[lastIndex] = b
                     }
                 }
             }
@@ -45,13 +54,16 @@ function BucketLayer(opts) {
                 bucket = buckets[lastIndex]
                 if (bucket) {
                     bucket[surface.id] = true
+                    bucket.keys.push(surface.id)
                 } else {
-                    b = {}
+                    b = {
+                        keys: [surface.id]
+                    }
                     b[surface.id] = true
                     buckets[lastIndex] = b
                 }
             }
-        })
+        }
 
         callback(null)
     }
@@ -64,29 +76,49 @@ function BucketLayer(opts) {
     }
 
     function remove(surfaces, callback) {
-        surfaces.forEach(function (s) {
-            var surface = items[s.id]
-            items[surface.id] = null
+        var surface,
+            bb,
+            index,
+            lastIndex,
+            bucket,
+            i, x, y
 
-            var bb = surface.meta.bb
-            var bucket, index
+        for (i = 0; i < surfaces.length; i += 1) {
+            surface = surfaces[i]
+            surface.id = surface.id || uuid()
+            items[surface.id] = surface
 
-            for (var x = bb.min.x; x < bb.max.x; x += bucketSize) {
-                for (var y = bb.min.y; y < bb.max.y; y += bucketSize) {
+            bb = surface.meta.bb
+            index = bucketIndex(bb.min.y, bb.min.y)
+            lastIndex = bucketIndex(bb.max.x, bb.max.y)
+
+            for (x = bb.min.x; x < bb.max.x; x += bucketSize) {
+                for (y = bb.min.y; y < bb.max.y; y += bucketSize) {
                     index = bucketIndex(x, y)
                     bucket = buckets[index]
                     if (bucket) {
-                        bucket[surface.id] = null
+                        delete bucket[surface.id]
+                        bucket.keys = Object.keys(bucket)
                     }
                 }
             }
-        })
+
+            if (index !== lastIndex) {
+                bucket = buckets[lastIndex]
+                if (bucket) {
+                    delete bucket[surface.id]
+                    bucket.keys = Object.keys(bucket)
+                }
+            }
+        }
 
         callback(null)
     }
 
     function bucketIndex(x, y) {
-        return Math.floor(x / bucketSize) + "-" + Math.floor(y / bucketSize)
+        var k1 = x >= 0 ? (x / bucketSize) >>> 0 : (x / bucketSize) - 1
+        var k2 = y >= 0 ? (y / bucketSize) >>> 0 : (y / bucketSize) - 1
+        return ((k1 + k2) * (k1 + k2 + 1)) + k2
     }
 
     function point(opts, callback) {
@@ -102,6 +134,7 @@ function BucketLayer(opts) {
     function region(surfaces, callback) {
         var query
 
+        // NAUGHTY
         var matches = {}
         var result = []
 
@@ -116,14 +149,22 @@ function BucketLayer(opts) {
             query = surfaces[i]
 
             var bb = query.meta.bb
-            var bucket
+            var bucket, index, lastIndex = bucketIndex(bb.max.x, bb.max.y)
 
             for (var x = bb.min.x; x < bb.max.x; x += bucketSize) {
                 for (var y = bb.min.y; y < bb.max.y; y += bucketSize) {
-                    bucket = buckets[bucketIndex(x, y)]
+                    index = bucketIndex(x, y)
+                    bucket = buckets[index]
                     if (bucket) {
-                        Object.keys(bucket).forEach(insertResult)
+                        bucket.keys.forEach(insertResult)
                     }
+                }
+            }
+
+            if (index !== lastIndex) {
+                bucket = buckets[lastIndex]
+                if (bucket) {
+                    bucket.keys.forEach(insertResult)
                 }
             }
         }
