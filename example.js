@@ -1,37 +1,32 @@
-var SurfaceDB = require("surfacedb")
+var SurfaceDB = require("./index")
 
-var Rectangle = require("surfacedb/rectangle")
+var Rectangle = require("./rectangle")
 
 var db = SurfaceDB({
     layers: {
-        "name": "bucketed"
+        "name": "naive"
     }
 })
 
-db.addLayer("name", {
-    sceneGraph: "bucketed"
-})
-
 db.insert("name", Rectangle({
-    x: 10,
-    y: 10,
-    information: {}
+    x: 9,
+    y: 9,
+    width: 5,
+    height: 5
 }))
 
 db.point("name", {
     x: 10,
     y: 10
 }, function (err, surfaces) {
-
+    console.log("SURFACES A", surfaces)
 })
 
 db.region("name", Rectangle({
     x: 10,
     y: 10,
     width: 10,
-    height: 10,
-    offset: { x: 5, y: 5 },
-    rotation: 0
+    height: 10
 }), function (err, surfaces) {
-
+    console.log("SURFACES B", surfaces)
 })

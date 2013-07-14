@@ -7,21 +7,27 @@
   "repository": "git://github.com/Matt-Esch/surfacedb.git",
   "main": "index",
   "homepage": "https://github.com/Matt-Esch/surfacedb",
-  "contributors": [{
-    "name": "Matt-Esch"
-  }],
+  "contributors": [
+    {
+      "name": "Matt-Esch"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/Matt-Esch/surfacedb/issues",
     "email": "matt@mattesch.info"
   },
-  "dependencies": {},
+  "dependencies": {
+    "uuid": "~1.4.1"
+  },
   "devDependencies": {
     "tape": "~1.0.2"
   },
-  "licenses": [{
-    "type": "MIT",
-    "url": "http://github.com/Matt-Esch/surfacedb/raw/master/LICENSE"
-  }],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/Matt-Esch/surfacedb/raw/master/LICENSE"
+    }
+  ],
   "scripts": {
     "test": "node ./test/index.js"
   },

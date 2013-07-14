@@ -13,6 +13,7 @@ type Surface := {
     points: Array<{
         x: Number, y: Number
     }>,
+    id: String,
     information: Object
 }
 
@@ -56,7 +57,7 @@ type SurfaceDatabase := {
     addLayer: (String, LayerOptions, Callback),
     insert: (String, MultiSurface, Callback),
     update: (String, MultiSurface, Callback),
-    delete: (String, MultiSurface, Callback),
+    remove: (String, MultiSurface, Callback),
     point: (String, {
         x: Number,
         y: Number
