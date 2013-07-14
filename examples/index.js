@@ -4,7 +4,13 @@ var ArrowKeys = require("arrow-keys")
 var Observable = require("observ")
 
 var CanvasRender = require("./lib/canvas-render.js")
+var createTerrain = require("./lib/generate-terrain.js")
 var SurfaceDB = require("../index.js")
+
+var WIDTH = 640
+var HEIGHT = 320
+var SPEED = 5
+var SIZE = 64
 
 var db = window.db = SurfaceDB()
 var app = App(db)
@@ -15,52 +21,34 @@ function App(db) {
     var main = db.addLayer("main", { sceneGraph: "bucket" })
 
     // create surfaces for layer
-    var surfaces = createSurfaces()
+    var surfaces = createTerrain({ size: SIZE })
     main.insert(surfaces)
 
     // create a screen to view
     var screenCoord = {
-        x: 0, y: 0, width: 640, height: 320
+        x: -(WIDTH / 2), y: -(HEIGHT / 2),
+        width: WIDTH + (SIZE * 2), height: HEIGHT + (SIZE * 2)
     }
     var screen = Observable(SurfaceDB.Rectangle(screenCoord))
 
     // render the layer within the screen
-    var canvas = CanvasRender(main, screen)
+    var canvas = CanvasRender(main, {
+        width: WIDTH, height: HEIGHT
+    },screen)
 
     // on user input update the screen
     var keys = ArrowKeys()
     keys.on("change", function (changes) {
         if (changes.x) {
-            screenCoord.x += changes.x
+            screenCoord.x += changes.x * SPEED
         }
         if (changes.y) {
-            screenCoord.y += changes.y
+            screenCoord.y += changes.y * SPEED
         }
 
+        // console.log("screenCoord", screenCoord)
         screen.set(SurfaceDB.Rectangle(screenCoord))
     })
 
     return { view: canvas }
-}
-
-function createSurfaces() {
-    var surfaces = []
-    for (var i = 0; i < 40; i++) {
-        for (var j = 0; j < 40; j++) {
-            var r = Math.floor(Math.random() * 256)
-            var g = Math.floor(Math.random() * 256)
-            var b = Math.floor(Math.random() * 256)
-
-            surfaces.push(SurfaceDB.Rectangle({
-                x: i * 10,
-                y: j * 10,
-                width: 10,
-                height: 10,
-                meta: {
-                    color: "rgb(" + r + "," + g + "," + b + ")"
-                }
-            }))
-        }
-    }
-    return surfaces
 }

@@ -4,10 +4,12 @@ var window = require("global/window")
 module.exports = CanvasRender
 
 // CanvasRender := (SurfaceDB, Observable<Surface>)
-function CanvasRender(db, screen) {
+function CanvasRender(db, opts, screen) {
     var canvas = document.createElement("canvas")
-    canvas.style.width = "640px"
-    canvas.style.height = "320px"
+    canvas.height = opts.height
+    canvas.width = opts.width
+    canvas.style.width = opts.width + "px"
+    canvas.style.height = opts.height + "px"
     canvas.style.border = "solid 1px black"
     var context = canvas.getContext("2d")
 
@@ -27,12 +29,16 @@ function CanvasRender(db, screen) {
 
         for (var i = 0; i < surfaces.length; i++) {
             var surface = surfaces[i]
+            var x = surface.points[0].x - screenSurface.meta.x
+            var y = surface.points[0].y - screenSurface.meta.y
+            var width = surface.points[3].x - surface.points[0].x
+            var height = surface.points[2].y - surface.points[0].y
+
             context.fillStyle = surface.meta.color
-            context.fillRect(
-                surface.points[0].x - screenSurface.meta.x,
-                surface.points[0].y - screenSurface.meta.y,
-                surface.points[3].x - surface.points[0].x,
-                surface.points[2].y - surface.points[0].y)
+            context.fillRect(x, y, width, height)
+
+            context.strokeStyle = "rgb(0, 0, 0)"
+            context.strokeRect(x,y,width,height)
         }
 
         window.requestAnimationFrame(ondraw)
