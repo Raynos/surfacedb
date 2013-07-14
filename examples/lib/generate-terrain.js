@@ -14,7 +14,8 @@ function createSurfaces(opts) {
     var size = opts.size || 64
 
     var surfaces = []
-    var chunks = perlinTerrain(uuid())({ x: -100, y: 0 }, 200)
+    var ceiling = opts.ceiling || 20
+    var chunks = perlinTerrain(uuid(), null, ceiling)({ x: -100, y: 0 }, 200)
 
     for (var i = 0; i < chunks.length; i++) {
         var grassPoint = chunks[i]

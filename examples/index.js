@@ -11,6 +11,7 @@ var WIDTH = 640
 var HEIGHT = 320
 var SPEED = 5
 var SIZE = 32
+var TERRAIN_HEIGHT = 10
 
 var db = window.db = SurfaceDB()
 var app = App(db)
@@ -23,12 +24,12 @@ function App(db) {
     })
 
     // create surfaces for layer
-    var surfaces = createTerrain({ size: SIZE })
+    var surfaces = createTerrain({ size: SIZE, ceiling: TERRAIN_HEIGHT })
     main.insert(surfaces)
 
     // create a screen to view
     var screenCoord = {
-        x: -(WIDTH / 2), y: -(HEIGHT / 2),
+        x: 0 - (WIDTH / 2), y: 0 - (HEIGHT / 2) - (TERRAIN_HEIGHT * SIZE / 2),
         width: WIDTH + (SIZE * 2), height: HEIGHT + (SIZE * 2)
     }
     var screen = Observable(SurfaceDB.Rectangle(screenCoord))
