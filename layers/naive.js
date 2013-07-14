@@ -48,13 +48,23 @@ function NaiveLayer() {
     }
 
     function region(surfaces, callback) {
-        callback(null, Object.keys(items).map(function (key) {
-            return items[key]
-        }).filter(function (surface) {
-            return surfaces.some(function (other) {
-                return boxIntersection(other.meta.bb, surface.meta.bb)
-            })
-        }))
+        // CREATE ARRAY OBJECT
+        var results = []
+
+        for (var key in items) {
+            var surface = items[key]
+            var bb = surface.meta.bb
+
+            for (var i = 0; i < surfaces.length; i++) {
+                var otherBB = surfaces[i].meta.bb
+
+                if (boxIntersection(otherBB, bb)) {
+                    results.push(surface)
+                }
+            }
+        }
+
+        callback(null, results)
     }
 }
 
