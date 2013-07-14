@@ -25,7 +25,19 @@ function SurfaceDB(opts) {
         update: update,
         remove: remove,
         point: point,
-        region: region
+        region: region,
+        layer: getLayer,
+        _layers: layers
+    }
+
+    function getLayer(name) {
+        return {
+            insert: insert.bind(null, name),
+            update: update.bind(null, name),
+            remove: remove.bind(null, name),
+            point: point.bind(null, name),
+            region: region.bind(null, name)
+        }
     }
 
     function addLayer(name, opts) {
@@ -35,8 +47,8 @@ function SurfaceDB(opts) {
             throw new Error("Unknown scene graph")
         }
 
-        var layer = layers[name] = createLayer(opts)
-        return layer
+        layers[name] = createLayer(opts)
+        return getLayer(name)
     }
 
     function insert(name, surfaces, callback) {

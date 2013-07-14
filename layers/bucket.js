@@ -13,7 +13,9 @@ function BucketLayer(opts) {
         update: update,
         remove: remove,
         point: point,
-        region: region
+        region: region,
+        _items: items,
+        _buckets: buckets
     }
 
     function insert(surfaces, callback) {

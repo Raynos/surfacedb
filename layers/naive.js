@@ -11,7 +11,8 @@ function NaiveLayer() {
         update: update,
         remove: remove,
         point: point,
-        region: region
+        region: region,
+        _items: items
     }
 
     function insert(surfaces, callback) {
