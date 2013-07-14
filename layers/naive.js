@@ -59,10 +59,10 @@ function NaiveLayer() {
 }
 
 function boxIntersection(leftBB, rightBB) {
-    return !(leftBB.max.x < rightBB.min.x ||
-        rightBB.max.x < leftBB.min.x ||
-        leftBB.max.y < rightBB.min.y ||
-        rightBB.max.y < leftBB.min.y
+    return !(leftBB.max.x <= rightBB.min.x ||
+        rightBB.max.x <= leftBB.min.x ||
+        leftBB.max.y <= rightBB.min.y ||
+        rightBB.max.y <= leftBB.min.y
     )
 }
 

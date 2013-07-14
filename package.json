@@ -23,7 +23,8 @@
     "indexhtmlify": "~1.0.0",
     "global": "~2.0.7",
     "wr": "~1.2.2",
-    "arrow-keys": "~1.0.0"
+    "arrow-keys": "~1.0.0",
+    "format-number": "0.0.0"
   },
   "licenses": [
     {
