@@ -1,5 +1,6 @@
 var Layers = {
-    naive: require("./layers/naive.js")
+    naive: require("./layers/naive.js"),
+    bucket: require("./layers/bucket.js")
 }
 
 SurfaceDB.Rectangle = require("./rectangle")
@@ -34,7 +35,7 @@ function SurfaceDB(opts) {
             throw new Error("Unknown scene graph")
         }
 
-        var layer = layers[name] = createLayer()
+        var layer = layers[name] = createLayer(opts)
         return layer
     }
 
