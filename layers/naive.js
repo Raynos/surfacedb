@@ -52,29 +52,10 @@ function NaiveLayer() {
             return items[key]
         }).filter(function (surface) {
             return surfaces.some(function (other) {
-                return boxIntersection(
-                    boundingBox(other), boundingBox(surface))
+                return boxIntersection(other.meta.bb, surface.meta.bb)
             })
         }))
     }
-}
-
-function boundingBox(surface) {
-    return surface.points.reduce(function (acc, point) {
-        return {
-            min: {
-                x: point.x < acc.min.x ? point.x : acc.min.x,
-                y: point.y < acc.min.y ? point.y : acc.min.y
-            },
-            max: {
-                x: point.x > acc.max.x ? point.x : acc.max.x,
-                y: point.y > acc.max.y ? point.y : acc.max.y
-            }
-        }
-    }, {
-        min: { x: Infinity, y: Infinity },
-        max: { x: -Infinity, y: -Infinity }
-    })
 }
 
 function boxIntersection(leftBB, rightBB) {
@@ -83,43 +64,6 @@ function boxIntersection(leftBB, rightBB) {
         leftBB.max.y < rightBB.min.y ||
         rightBB.max.y < leftBB.min.y
     )
-}
-
-function surfaceIntersection(leftSurface, rightSurface) {
-    var leftBB = boundingBox(leftSurface)
-    var rightBB = boundingBox(rightSurface)
-
-    if (!boxIntersection(leftBB, rightBB)) {
-        return false
-    }
-
-    var bb = {
-        min: {
-            x: Math.max(leftBB.min.x, rightBB.min.x),
-            y: Math.max(leftBB.min.y, rightBB.min.y)
-        },
-        max: {
-            x: Math.min(leftBB.max.x, rightBB.max.x),
-            y: Math.min(leftBB.max.y, rightBB.max.y)
-        }
-    }
-
-    var containingPoints = leftSurface.points
-        .concat(rightSurface.points)
-        .filter(function (point) {
-            return (bb.min.x <= point.x && point.x <= bb.max.x) &&
-                (bb.min.y <= point.y && point.y <= bb.max.y)
-        })
-
-    if (containingPoints.length === 0) {
-        return true
-    }
-
-    return leftSurface.points.some(function (point) {
-        return pointInSurface(point, rightSurface)
-    }) || rightSurface.points.some(function (point) {
-        return pointInSurface(point, leftSurface)
-    })
 }
 
 function pointInSurface(point, surface) {

@@ -14,7 +14,7 @@ type Surface := {
         x: Number, y: Number
     }>,
     id: String,
-    information: Object
+    meta: Object
 }
 
 type MultiSurface := Array<Surface> | Surface
