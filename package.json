@@ -23,7 +23,8 @@
     "indexhtmlify": "~1.0.0",
     "global": "~2.0.7",
     "wr": "~1.2.2",
-    "arrow-keys": "~1.0.0"
+    "arrow-keys": "~1.0.0",
+    "format-number": "0.0.0"
   },
   "licenses": [
     {
@@ -35,7 +36,8 @@
     "test": "node ./test/index.js",
     "build": "browserify ./examples/index.js | indexhtmlify > ./examples/index.html",
     "watch": "yawatch ./examples/index.js --on-any='npm run build'",
-    "open": "google-chrome ./examples/index.html"
+    "open": "google-chrome ./examples/index.html",
+    "bench": "node ./benchmarks/index.js"
   },
   "testling": {
     "files": "test/index.js",

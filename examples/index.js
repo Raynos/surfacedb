@@ -5,8 +5,8 @@ var ArrowKeys = require("arrow-keys")
 var SurfaceDB = require("../index")
 
 var surfaces = []
-for (var i = 0; i < 200; i++) {
-    for (var j = 0; j < 200; j++) {
+for (var i = 0; i < 40; i++) {
+    for (var j = 0; j < 40; j++) {
         var r = Math.floor(Math.random() * 256)
         var g = Math.floor(Math.random() * 256)
         var b = Math.floor(Math.random() * 256)
@@ -25,7 +25,7 @@ for (var i = 0; i < 200; i++) {
 
 var db = window.db = SurfaceDB({
     layers: {
-        "main": "bucket"
+        "main": "naive"
     }
 })
 
@@ -58,30 +58,34 @@ keys.on("change", function (changes) {
     screen = SurfaceDB.Rectangle(screenCoord)
 })
 
-window.requestAnimationFrame(function ondraw() {
-    db.region("main", screen, function (err, surfaces) {
-        if (err) {
-            throw err
-        }
+// var SURFACES
+// db.region("main", screen, function (err, surf) {
+//     SURFACES = surf
+// })
 
-        context.clearRect(0, 0, 640, 320)
+window.requestAnimationFrame(ondraw)
 
-        surfaces.forEach(function (surface) {
-            var rect = createRectangle(surface)
-            context.fillStyle = surface.meta.color
-            context.fillRect(rect.x - screenCoord.x, rect.y - screenCoord.y,
-                rect.width, rect.height)
-        })
+function ondraw() {
+    db.region("main", screen, render)
+    // render(null, SURFACES)
+}
 
-        window.requestAnimationFrame(ondraw)
-    })
-})
-
-function createRectangle(surface) {
-    return {
-        x: surface.points[0].x,
-        y: surface.points[0].y,
-        width: surface.points[3].x - surface.points[0].x,
-        height: surface.points[2].y - surface.points[0].y
+function render(err, surfaces) {
+    if (err) {
+        throw err
     }
+
+    context.clearRect(0, 0, 640, 320)
+
+    for (var i = 0; i < surfaces.length; i++) {
+        var surface = surfaces[i]
+        context.fillStyle = surface.meta.color
+        context.fillRect(
+            surface.points[0].x - screenCoord.x,
+            surface.points[0].y - screenCoord.y,
+            surface.points[3].x - surface.points[0].x,
+            surface.points[2].y - surface.points[0].y)
+    }
+
+    window.requestAnimationFrame(ondraw)
 }

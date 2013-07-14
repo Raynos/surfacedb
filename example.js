@@ -4,7 +4,7 @@ var Rectangle = require("./rectangle")
 
 var db = SurfaceDB({
     layers: {
-        "name": "naive"
+        "name": "bucket"
     }
 })
 
@@ -25,8 +25,8 @@ db.point("name", {
 db.region("name", Rectangle({
     x: 10,
     y: 10,
-    width: 10,
-    height: 10
+    width: 1,
+    height: 1
 }), function (err, surfaces) {
     console.log("SURFACES B", surfaces)
 })
