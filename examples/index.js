@@ -16,7 +16,7 @@ for (var i = 0; i < 200; i++) {
             y: j * 10,
             width: 10,
             height: 10,
-            information: {
+            meta: {
                 color: "rgb(" + r + "," + g + "," + b + ")"
             }
         }))
@@ -25,7 +25,7 @@ for (var i = 0; i < 200; i++) {
 
 var db = window.db = SurfaceDB({
     layers: {
-        "main": "naive"
+        "main": "bucket"
     }
 })
 
@@ -68,7 +68,7 @@ window.requestAnimationFrame(function ondraw() {
 
         surfaces.forEach(function (surface) {
             var rect = createRectangle(surface)
-            context.fillStyle = surface.information.color
+            context.fillStyle = surface.meta.color
             context.fillRect(rect.x - screenCoord.x, rect.y - screenCoord.y,
                 rect.width, rect.height)
         })
