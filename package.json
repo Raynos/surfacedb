@@ -27,7 +27,9 @@
     "serve-browserify": "~0.3.3",
     "observ": "~0.1.0",
     "tape": "~1.0.4",
-    "perlin": "~1.0.0"
+    "perlin": "~1.0.0",
+    "kb-controls": "0.0.2",
+    "raf": "0.0.3"
   },
   "licenses": [
     {

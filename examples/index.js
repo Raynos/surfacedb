@@ -1,7 +1,7 @@
 var window = require("global/window")
 var document = require("global/document")
-var ArrowKeys = require("arrow-keys")
 var Observable = require("observ")
+var kb = require("kb-controls")
 
 var CanvasRender = require("./lib/canvas-render.js")
 var createTerrain = require("./lib/generate-terrain.js")
@@ -12,6 +12,16 @@ var HEIGHT = 320
 var SPEED = 5
 var SIZE = 32
 var TERRAIN_HEIGHT = 10
+var KEYS_MAP = {
+    "<left>": "left",
+    "<right>": "right",
+    "<up>": "up",
+    "<down>": "down",
+    "A": "left",
+    "D": "right",
+    "W": "up",
+    "S": "down"
+}
 
 var db = window.db = SurfaceDB()
 var app = App(db)
@@ -37,19 +47,17 @@ function App(db) {
     // render the layer within the screen
     var canvas = CanvasRender(main, {
         width: WIDTH, height: HEIGHT
-    },screen)
+    }, screen)
 
     // on user input update the screen
-    var keys = ArrowKeys()
-    keys.on("change", function (changes) {
-        if (changes.x) {
-            screenCoord.x += changes.x * SPEED
+    var controls = kb(KEYS_MAP, function oninput() {
+        if (controls.left || controls.right) {
+            screenCoord.x += (controls.left ? -1 : 1) * SPEED
         }
-        if (changes.y) {
-            screenCoord.y += changes.y * SPEED
+        if (controls.up || controls.down) {
+            screenCoord.y += (controls.up ? -1 : 1) * SPEED
         }
 
-        // console.log("screenCoord", screenCoord)
         screen.set(SurfaceDB.Rectangle(screenCoord))
     })
 

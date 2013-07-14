@@ -1,5 +1,5 @@
 var document = require("global/document")
-var window = require("global/window")
+var raf = require("raf").polyfill
 
 module.exports = CanvasRender
 
@@ -13,10 +13,11 @@ function CanvasRender(db, opts, screen) {
     canvas.style.border = "solid 1px black"
     var context = canvas.getContext("2d")
 
-    window.requestAnimationFrame(ondraw)
+    raf(ondraw)
 
     function ondraw() {
         db.region(screen(), render)
+        raf(ondraw)
     }
 
     function render(err, surfaces) {
@@ -42,8 +43,6 @@ function CanvasRender(db, opts, screen) {
             context.strokeStyle = "rgb(0, 0, 0)"
             context.strokeRect(x,y, width, height)
         }
-
-        window.requestAnimationFrame(ondraw)
     }
 
     return canvas
