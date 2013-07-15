@@ -17,8 +17,7 @@
     "email": "matt@mattesch.info"
   },
   "dependencies": {
-    "uuid": "~1.4.1",
-    "kb-controls": "git://github.com/Raynos/kb-controls"
+    "uuid": "~1.4.1"
   },
   "devDependencies": {
     "global": "~2.0.7",
@@ -29,7 +28,7 @@
     "observ": "~0.1.0",
     "tape": "~1.0.4",
     "perlin": "~1.0.0",
-    "kb-controls": "0.0.2",
+    "kb-controls": "git://github.com/Raynos/kb-controls",
     "raf": "0.0.3"
   },
   "licenses": [
