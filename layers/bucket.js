@@ -7,6 +7,9 @@ function BucketLayer(opts) {
     var buckets = []
     var items = {}
     var bucketSize = opts.size || 32
+    var resultBuffer = []
+    var hashBuffer = {}
+    var indices = []
 
     return {
         insert: insert,
@@ -33,6 +36,7 @@ function BucketLayer(opts) {
             items[surface.id] = surface
 
             bb = surface.meta.bb
+
             index = bucketIndex(bb.min.y, bb.min.y)
 
             bucketsX = Math.ceil((bb.max.x - bb.min.x)/(bucketSize))
@@ -103,7 +107,16 @@ function BucketLayer(opts) {
     }
 
     function bucketIndex(x, y) {
-        return Math.floor(x / bucketSize) + "-" + Math.floor(y / bucketSize)
+        var xIndex = Math.floor(x / bucketSize)
+        var yIndex = Math.floor(y / bucketSize)
+
+        var xkey = indices[xIndex]
+        if (!xkey || (xkey && !xkey[yIndex])) {
+            !xkey && (indices[xIndex] = xkey = [])
+            xkey[yIndex] = xIndex + "-" + yIndex
+        }
+
+        return xkey[yIndex]
     }
 
     function point(opts, callback) {
@@ -123,18 +136,23 @@ function BucketLayer(opts) {
             bucket,
             bucketsX,
             bucketsY,
-            i, x, y
+            i, x, y, k, item
+
+        
 
         // NAUGHTY
-        var matches = {}
-        var result = []
+        var result = resultBuffer
+        var match = hashBuffer
+        var j = 0
 
+        /*
         function insertResult(key) {
             if (!matches[key]) {
                 matches[key] = true
-                result.push(items[key])
+                result[j] = items[key]
+                j++
             }
-        }
+        }*/
 
         for (i = 0; i < surfaces.length; i += 1) {
             surface = surfaces[i]
@@ -147,16 +165,32 @@ function BucketLayer(opts) {
             bucketsX = Math.ceil((bb.max.x - bb.min.x)/(bucketSize))
             bucketsY = Math.ceil((bb.max.y - bb.min.y)/(bucketSize))
 
+
+
             for (x = 0; x < bucketsX; x += 1) {
                 for (y = 0; y < bucketsY; y += 1) {
-                    index = bucketIndex(bb.min.x + (x * bucketSize), bb.min.y + (y * bucketSize))
-                    bucket = buckets[index]
+                    bucket = buckets[bucketIndex(bb.min.x + (x * bucketSize), bb.min.y + (y * bucketSize))]
                     if (bucket) {
-                        bucket.keys.forEach(insertResult)
+                        for (k = 0; k < bucket.keys.length; k += 1) {
+                            item = items[bucket.keys[k]]
+                            if (!match[item.id]) {
+                                result[j] = item
+                                match[item.id] = true
+                                j++
+                            }
+                        }
                     }
                 }
             }
+
         }
+
+        //result.splice(j, Number.MAX_VALUE)
+
+        // clear the match buffer
+        //for (i = 0; i < result.length; i += 1) {
+        //    match[result[i].id] = false
+        //}
 
         callback(null, result)
     }
