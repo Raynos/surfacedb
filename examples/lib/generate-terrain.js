@@ -6,29 +6,33 @@ var SurfaceDB = require("../../index.js")
 var SKY_COLOR = "rgb(87, 238, 255)"
 var GRASS_COLOR = "rgb(59, 217, 15)"
 var DIRT_COLOR = "rgb(87, 51, 2)"
+var BLACK = "rgb(0, 0, 0)"
 
 module.exports = createSurfaces
 
 function createSurfaces(opts) {
     opts = opts || {}
-    var size = opts.size || 64
+    var chunkSize = opts.chunkSize || 64
 
     var surfaces = []
     var ceiling = opts.ceiling || 20
-    var chunks = perlinTerrain(uuid(), null, ceiling)({ x: -100, y: 0 }, 200)
+    var mapSize = opts.mapSize || 100
+    var generateChunks = perlinTerrain(uuid(), null, ceiling)
+    var chunks = generateChunks({ x: -(mapSize), y: 0 }, mapSize * 2)
 
     for (var i = 0; i < chunks.length; i++) {
         var grassPoint = chunks[i]
-        for (var j = -20; j < 20; j++) {
+        for (var j = -(ceiling); j < ceiling; j++) {
             var color = j < grassPoint.y ? DIRT_COLOR :
                 j > grassPoint.y ? SKY_COLOR : GRASS_COLOR
+            var outline = j > grassPoint.y ? undefined : BLACK
 
             surfaces.push(SurfaceDB.Rectangle({
-                x: grassPoint.x * size,
-                y: -(j * size),
-                width: size,
-                height: size,
-                meta: { color: color }
+                x: grassPoint.x * chunkSize,
+                y: -(j * chunkSize),
+                width: chunkSize,
+                height: chunkSize,
+                meta: { color: color, outline: outline }
             }))
         }
     }

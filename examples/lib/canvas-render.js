@@ -40,8 +40,10 @@ function CanvasRender(db, opts, screen) {
             context.fillRect(x, y, width, height)
             // console.log("placing things in", x, y)
 
-            context.strokeStyle = "rgb(0, 0, 0)"
-            context.strokeRect(x,y, width, height)
+            if (surface.meta.outline) {
+                context.strokeStyle = surface.meta.outline
+                context.strokeRect(x, y, width, height)
+            }
         }
     }
 

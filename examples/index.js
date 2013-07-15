@@ -8,10 +8,11 @@ var createTerrain = require("./lib/generate-terrain.js")
 var SurfaceDB = require("../index.js")
 
 var WIDTH = 640
-var HEIGHT = 320
+var HEIGHT = 480
 var SPEED = 5
-var SIZE = 32
-var TERRAIN_HEIGHT = 10
+var SIZE = 16
+var TERRAIN_HEIGHT = 40
+var MAP_SIZE = 100
 var KEYS_MAP = {
     "<left>": "left",
     "<right>": "right",
@@ -20,7 +21,8 @@ var KEYS_MAP = {
     "A": "left",
     "D": "right",
     "W": "up",
-    "S": "down"
+    "S": "down",
+    "H": "home"
 }
 
 var db = window.db = SurfaceDB()
@@ -34,32 +36,61 @@ function App(db) {
     })
 
     // create surfaces for layer
-    var surfaces = createTerrain({ size: SIZE, ceiling: TERRAIN_HEIGHT })
-    main.insert(surfaces)
+    var terrain = createTerrain({
+        chunkSize: SIZE,
+        ceiling: TERRAIN_HEIGHT,
+        mapSize: MAP_SIZE
+    })
+    main.insert(terrain)
+
+    var initialPos = {
+        x: 0 - (WIDTH / 2), y: 0 - (HEIGHT / 2) - (TERRAIN_HEIGHT * SIZE / 2)
+    }
 
     // create a screen to view
-    var screenCoord = {
-        x: 0 - (WIDTH / 2), y: 0 - (HEIGHT / 2) - (TERRAIN_HEIGHT * SIZE / 2),
+    var camera = Camera({
+        x: initialPos.x, y: initialPos.y,
         width: WIDTH + (SIZE * 2), height: HEIGHT + (SIZE * 2)
-    }
-    var screen = Observable(SurfaceDB.Rectangle(screenCoord))
+    })
+
+    // on user input update the screen
+    var controls = kb(KEYS_MAP, function oninput() {
+        var x = 0, y = 0
+        if (controls.left || controls.right) {
+            x = (controls.left ? -1 : 1) * SPEED
+        }
+        if (controls.up || controls.down) {
+            y = (controls.up ? -1 : 1) * SPEED
+        }
+
+        camera.move(x, y)
+    })
+
+    controls.on("home", function () {
+        camera.reset(initialPos.x, initialPos.y)
+    })
 
     // render the layer within the screen
     var canvas = CanvasRender(main, {
         width: WIDTH, height: HEIGHT
-    }, screen)
-
-    // on user input update the screen
-    var controls = kb(KEYS_MAP, function oninput() {
-        if (controls.left || controls.right) {
-            screenCoord.x += (controls.left ? -1 : 1) * SPEED
-        }
-        if (controls.up || controls.down) {
-            screenCoord.y += (controls.up ? -1 : 1) * SPEED
-        }
-
-        screen.set(SurfaceDB.Rectangle(screenCoord))
-    })
+    }, camera)
 
     return { view: canvas }
+}
+
+function Camera(coords) {
+    var screen = Observable(SurfaceDB.Rectangle(coords))
+
+    screen.move = function (x, y) {
+        coords.x += x
+        coords.y += y
+        screen.set(SurfaceDB.Rectangle(coords))
+    }
+    screen.reset = function (x, y) {
+        coords.x = x
+        coords.y = y
+        screen.set(SurfaceDB.Rectangle(coords))
+    }
+
+    return screen
 }
