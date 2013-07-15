@@ -131,7 +131,7 @@ function BucketLayer(opts) {
         }).filter(function (surface) {
             return pointInSurface(opts, surface)
         }))
-    }   
+    }
 
     function region(surfaces, callback) {
         var query

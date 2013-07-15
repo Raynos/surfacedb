@@ -17,7 +17,8 @@
     "email": "matt@mattesch.info"
   },
   "dependencies": {
-    "uuid": "~1.4.1"
+    "uuid": "~1.4.1",
+    "node-webgl": "~0.1.4"
   },
   "devDependencies": {
     "global": "~2.0.7",
