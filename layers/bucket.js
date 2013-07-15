@@ -138,21 +138,9 @@ function BucketLayer(opts) {
             bucketsY,
             i, x, y, k, item
 
-        
-
-        // NAUGHTY
         var result = resultBuffer
         var match = hashBuffer
         var j = 0
-
-        /*
-        function insertResult(key) {
-            if (!matches[key]) {
-                matches[key] = true
-                result[j] = items[key]
-                j++
-            }
-        }*/
 
         for (i = 0; i < surfaces.length; i += 1) {
             surface = surfaces[i]
@@ -185,12 +173,12 @@ function BucketLayer(opts) {
 
         }
 
-        //result.splice(j, Number.MAX_VALUE)
+        result.splice(j, Number.MAX_VALUE)
 
         // clear the match buffer
-        //for (i = 0; i < result.length; i += 1) {
-        //    match[result[i].id] = false
-        //}
+        for (i = 0; i < result.length; i += 1) {
+            match[result[i].id] = false
+        }
 
         callback(null, result)
     }
