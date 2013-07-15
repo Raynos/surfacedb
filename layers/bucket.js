@@ -103,9 +103,7 @@ function BucketLayer(opts) {
     }
 
     function bucketIndex(x, y) {
-        var k1 = Math.floor(x / bucketSize)
-        var k2 = Math.floor(y / bucketSize)
-        return ((k1 + k2) * (k1 + k2 + 1)) + k2
+        return Math.floor(x / bucketSize) + "-" + Math.floor(y / bucketSize)
     }
 
     function point(opts, callback) {
