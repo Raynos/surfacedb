@@ -14,7 +14,7 @@ suite("region query 100 out of 900", function (benchmark) {
     })
     benchmark("bucket", 5000 * SPEED, function () {
         query(db, "bucket", {
-            width: 1, height: 1, size: 400
+            width: 1, height: 1, size: 100
         })
     })
 })
@@ -44,7 +44,7 @@ suite("region query 400 out of 3600", function (benchmark) {
     })
     benchmark("bucket", 2400 * SPEED, function () {
         query(db, "bucket", {
-            width: 11, height: 11, size: 700
+            width: 11, height: 11, size: 400
         })
     })
 })
@@ -74,7 +74,7 @@ suite("region query 150 out of 10000", function (benchmark) {
     })
     benchmark("bucket", 2500 * SPEED, function () {
         query(db, "bucket", {
-            width: 4, height: 4, size: 700
+            width: 4, height: 4, size: 400
         })
     })
 })
@@ -89,7 +89,7 @@ suite("region query 1000 out of 10000", function (benchmark) {
     })
     benchmark("bucket", 750 * SPEED, function () {
         query(db, "bucket", {
-            width: 22, height: 22, size: 2300
+            width: 22, height: 22, size: 1600
         })
     })
 })
@@ -104,7 +104,7 @@ suite("region query 8000 out of 10000", function (benchmark) {
     })
     benchmark("bucket", 150 * SPEED, function () {
         query(db, "bucket", {
-            width: 80, height: 80, size: 7900
+            width: 80, height: 80, size: 6400
         })
     })
 })

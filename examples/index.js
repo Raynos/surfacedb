@@ -44,7 +44,7 @@ function App(db) {
     main.insert(terrain)
 
     var initialPos = {
-        x: 0 - (WIDTH / 2), y: 0 - (HEIGHT / 2) - (TERRAIN_HEIGHT * SIZE / 2)
+        x: 0 - (WIDTH / 2), y: -(TERRAIN_HEIGHT * SIZE / 2) - (HEIGHT / 2)
     }
 
     // create a screen to view
