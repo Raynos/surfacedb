@@ -17,8 +17,7 @@
     "email": "matt@mattesch.info"
   },
   "dependencies": {
-    "uuid": "~1.4.1",
-    "node-webgl": "~0.1.4"
+    "uuid": "~1.4.1"
   },
   "devDependencies": {
     "global": "~2.0.7",
@@ -27,7 +26,10 @@
     "ecstatic": "~0.4.5",
     "serve-browserify": "~0.3.3",
     "observ": "~0.1.0",
-    "tape": "~1.0.4"
+    "tape": "~1.0.4",
+    "perlin": "~1.0.0",
+    "kb-controls": "git://github.com/Raynos/kb-controls",
+    "raf": "0.0.3"
   },
   "licenses": [
     {

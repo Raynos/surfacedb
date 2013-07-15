@@ -1,20 +1,23 @@
 var document = require("global/document")
-var window = require("global/window")
+var raf = require("raf").polyfill
 
 module.exports = CanvasRender
 
 // CanvasRender := (SurfaceDB, Observable<Surface>)
-function CanvasRender(db, screen) {
+function CanvasRender(db, opts, screen) {
     var canvas = document.createElement("canvas")
-    canvas.style.width = "640px"
-    canvas.style.height = "320px"
+    canvas.height = opts.height
+    canvas.width = opts.width
+    canvas.style.width = opts.width + "px"
+    canvas.style.height = opts.height + "px"
     canvas.style.border = "solid 1px black"
     var context = canvas.getContext("2d")
 
-    window.requestAnimationFrame(ondraw)
+    raf(ondraw)
 
     function ondraw() {
         db.region(screen(), render)
+        raf(ondraw)
     }
 
     function render(err, surfaces) {
@@ -23,19 +26,25 @@ function CanvasRender(db, screen) {
         }
 
         var screenSurface = screen()
-        context.clearRect(0, 0, 640, 320)
+        // console.log("clearing", opts.width, opts.height)
+        context.clearRect(0, 0, opts.width, opts.height)
 
         for (var i = 0; i < surfaces.length; i++) {
             var surface = surfaces[i]
-            context.fillStyle = surface.meta.color
-            context.fillRect(
-                surface.points[0].x - screenSurface.meta.x,
-                surface.points[0].y - screenSurface.meta.y,
-                surface.points[3].x - surface.points[0].x,
-                surface.points[2].y - surface.points[0].y)
-        }
+            var x = surface.meta.x - screenSurface.meta.x
+            var y = surface.meta.y - screenSurface.meta.y
+            var width = surface.meta.width
+            var height = surface.meta.height
 
-        window.requestAnimationFrame(ondraw)
+            context.fillStyle = surface.meta.color
+            context.fillRect(x, y, width, height)
+            // console.log("placing things in", x, y)
+
+            if (surface.meta.outline) {
+                context.strokeStyle = surface.meta.outline
+                context.strokeRect(x, y, width, height)
+            }
+        }
     }
 
     return canvas
