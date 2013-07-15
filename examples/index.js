@@ -32,7 +32,7 @@ document.body.appendChild(app.view)
 function App(db) {
     // create layer for screen
     var main = db.addLayer("main", {
-        sceneGraph: "bucket"
+        sceneGraph: "aabb"
     })
 
     // create surfaces for layer

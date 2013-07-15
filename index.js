@@ -1,6 +1,7 @@
 var Layers = {
     naive: require("./layers/naive.js"),
-    bucket: require("./layers/bucket.js")
+    bucket: require("./layers/bucket.js"),
+    aabb: require("./layers/aabb.js")
 }
 
 SurfaceDB.Rectangle = require("./rectangle")
