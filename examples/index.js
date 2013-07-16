@@ -30,18 +30,24 @@ var app = App(db)
 document.body.appendChild(app.view)
 
 function App(db) {
-    // create layer for screen
-    var main = db.addLayer("main", {
-        sceneGraph: "aabb"
-    })
+    var layers = []
 
-    // create surfaces for layer
-    var terrain = createTerrain({
-        chunkSize: SIZE,
-        ceiling: TERRAIN_HEIGHT,
-        mapSize: MAP_SIZE
-    })
-    main.insert(terrain)
+    for (var i = 0; i < 10; i += 1) {
+        // create layer for screen
+        var main = db.addLayer("main-" + i, {
+            sceneGraph: "aabb"
+        })
+
+        // create surfaces for layer
+        var terrain = createTerrain({
+            chunkSize: SIZE,
+            ceiling: TERRAIN_HEIGHT,
+            mapSize: MAP_SIZE
+        })
+        main.insert(terrain)
+
+        layers.push(main)
+    }
 
     var initialPos = {
         x: 0 - (WIDTH / 2), y: -(TERRAIN_HEIGHT * SIZE / 2) - (HEIGHT / 2)
@@ -71,7 +77,7 @@ function App(db) {
     })
 
     // render the layer within the screen
-    var canvas = CanvasRender(main, {
+    var canvas = CanvasRender(layers, {
         width: WIDTH, height: HEIGHT
     }, camera)
 

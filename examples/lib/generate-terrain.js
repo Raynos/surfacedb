@@ -21,14 +21,22 @@ function createSurfaces(opts) {
     var chunks = generateChunks({ x: -(mapSize), y: 0 }, mapSize * 2)
 
     for (var i = 0; i < chunks.length; i++) {
-        var grassPoint = chunks[i]
-        for (var j = -(ceiling); j < ceiling; j++) {
-            var color = j < grassPoint.y ? DIRT_COLOR :
-                j > grassPoint.y ? SKY_COLOR : GRASS_COLOR
-            var outline = j > grassPoint.y ? undefined : BLACK
+        var left = Math.max(0, i - 1)
+        var right = Math.min(chunks.length - 1, i + 1)
+        var point = chunks[i]
+
+        var grassPoint = Math.min(chunks[left].y, point.y, chunks[right].y)
+        var minGrass = Math.min(point.y, grassPoint)
+        var maxGrass = Math.max(point.y, grassPoint)
+
+        minGrass < maxGrass && minGrass++
+        for (var j = -(ceiling); j <= maxGrass; j++) {
+            var color = j < minGrass ? DIRT_COLOR :
+                j > maxGrass ? SKY_COLOR : GRASS_COLOR
+            var outline = j > maxGrass ? undefined : BLACK
 
             surfaces.push(SurfaceDB.Rectangle({
-                x: grassPoint.x * chunkSize,
+                x: point.x * chunkSize,
                 y: -(j * chunkSize),
                 width: chunkSize,
                 height: chunkSize,

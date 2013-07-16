@@ -3,8 +3,10 @@ var raf = require("raf").polyfill
 
 module.exports = CanvasRender
 
+var SKY_COLOR = "rgb(87, 238, 255)"
+
 // CanvasRender := (SurfaceDB, Observable<Surface>)
-function CanvasRender(db, opts, screen) {
+function CanvasRender(layers, opts, screen) {
     var canvas = document.createElement("canvas")
     canvas.height = opts.height
     canvas.width = opts.width
@@ -16,7 +18,12 @@ function CanvasRender(db, opts, screen) {
     raf(ondraw)
 
     function ondraw() {
-        db.region(screen(), render)
+        context.fillStyle = SKY_COLOR
+        context.fillRect(0, 0, opts.width, opts.height)
+
+        for (var i = 0; i < layers.length; i += 1) {
+            layers[i].region(screen(), render)
+        }
         raf(ondraw)
     }
 
@@ -27,7 +34,6 @@ function CanvasRender(db, opts, screen) {
 
         var screenSurface = screen()
         // console.log("clearing", opts.width, opts.height)
-        context.clearRect(0, 0, opts.width, opts.height)
 
         for (var i = 0; i < surfaces.length; i++) {
             var surface = surfaces[i]
