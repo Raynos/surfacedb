@@ -11,6 +11,7 @@ var MAP_SIZE = CONSTANTS.MAP_SIZE
 var PLAYER_HEIGHT = CONSTANTS.PLAYER_HEIGHT
 var PLAYER_COLOR = CONSTANTS.PLAYER_COLOR
 var SPEED = CONSTANTS.SPEED
+var JUMP_SPEED = CONSTANTS.JUMP_SPEED
 var GRAVITY = CONSTANTS.GRAVITY
 var TERMINAL_VELOCITY = CONSTANTS.TERMINAL_VELOCITY
 var createTerrain = require("./lib/generate-terrain.js")
@@ -35,7 +36,8 @@ function Game(db, inputs) {
         jumpsAllowed: true,
         meta: {
             color: PLAYER_COLOR,
-            type: "player"
+            type: "player",
+            outline: "rgb(0, 0, 255)"
         }
     })
     setupPlayer(main, player)
@@ -56,7 +58,7 @@ function Game(db, inputs) {
         var player = viewModel.player()
         player.xVelocity = changes.x
         if (changes.y < 0 && player.jumpsAllowed) {
-            player.yVelocity = -SPEED
+            player.yVelocity = -JUMP_SPEED
             player.jumpsAllowed = false
         }
         viewModel.player.set(player)
@@ -138,8 +140,6 @@ function loop(body, callback) {
         body(next, callback)
     }, callback)
 }
-
-
 
 // canMove := (SurfaceDB, String, { x: Number, y: Number}, Callback<Boolean>)
 function canMove(db, type, position, callback) {
