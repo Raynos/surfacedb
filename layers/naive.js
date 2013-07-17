@@ -21,7 +21,7 @@ function NaiveLayer() {
             items[surface.id] = surface
         })
 
-        callback(null)
+        callback(null, surfaces)
     }
 
     function update(surfaces, callback) {

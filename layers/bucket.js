@@ -62,14 +62,17 @@ function BucketLayer(opts) {
             }
         }
 
-        callback(null)
+        callback(null, surfaces)
     }
 
     function update(surfaces, callback) {
-        remove(surfaces)
-        insert(surfaces)
+        remove(surfaces, function (err) {
+            if (err) {
+                return callback(err)
+            }
 
-        callback(null)
+            insert(surfaces, callback)
+        })
     }
 
     function remove(surfaces, callback) {
@@ -97,13 +100,17 @@ function BucketLayer(opts) {
                     bucket = buckets[index]
                     if (bucket) {
                         delete bucket[surface.id]
-                        bucket.keys = Object.keys(bucket)
+                        bucket.keys = Object.keys(bucket).filter(notKeys)
                     }
                 }
             }
         }
 
         callback(null)
+    }
+
+    function notKeys(key) {
+        return key !== "keys"
     }
 
     function bucketIndex(x, y) {

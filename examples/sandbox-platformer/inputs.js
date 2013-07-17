@@ -32,5 +32,9 @@ function Inputs(window) {
         emitter.emit("move", { x: x, y: y })
     })
 
+    controls.on("pulse", function () {
+        emitter.emit("pulse")
+    })
+
     return emitter
 }

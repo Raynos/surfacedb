@@ -1,4 +1,5 @@
 var Observable = require("observ")
+var computed = require("observ/computed")
 var SurfaceDB = require("../../index.js")
 
 var CONSTANTS = require("./constants")
@@ -18,10 +19,34 @@ function Game(db, inputs) {
         sceneGraph: "bucket"
     })
     var grassChunks = initTerrain(main)
+    var player = setupPlayer(main, grassChunks)
 
+    var viewModel = {
+        camera: computed([player], function (player) {
+            return {
+                x: player.x - (WIDTH / 2),
+                y: player.y - (HEIGHT / 2),
+                width: WIDTH + (SIZE * 2),
+                height: HEIGHT + (SIZE * 2)
+            }
+        }),
+        player: player
+    }
+
+    inputs.on("move", function (changes) {
+        var coords = viewModel.player()
+        coords.x += changes.x
+        coords.y += changes.y
+        viewModel.player.set(coords)
+    })
+
+    return viewModel
+}
+
+function setupPlayer(main, grassChunks) {
     var grass = grassChunks[MAP_SIZE]
 
-    var player = {
+    var player = Observable({
         x: 0,
         height: PLAYER_HEIGHT,
         width: SIZE,
@@ -29,26 +54,23 @@ function Game(db, inputs) {
         meta: {
             color: PLAYER_COLOR
         }
-    }
-
-    main.insert(SurfaceDB.Rectangle(player))
-    var viewModel = {
-        camera: Observable({
-            x: player.x - (WIDTH / 2),
-            y: player.y - (HEIGHT / 2),
-            width: WIDTH + (SIZE * 2),
-            height: HEIGHT + (SIZE * 2)
-        })
-    }
-
-    inputs.on("move", function (changes) {
-        var coords = viewModel.camera()
-        coords.x += changes.x
-        coords.y += changes.y
-        viewModel.camera.set(coords)
     })
 
-    return viewModel
+    main.insert(SurfaceDB.Rectangle(player()),
+        function (err, surfaces) {
+            if (err) {
+                throw err
+            }
+
+            var surface = surfaces[0]
+            player(function (player) {
+                var newSurface = SurfaceDB.Rectangle(player)
+                newSurface.id = surface.id
+                main.update(newSurface)
+            })
+        })
+
+    return player
 }
 
 function initTerrain(db) {
