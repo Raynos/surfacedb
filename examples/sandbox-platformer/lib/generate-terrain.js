@@ -7,6 +7,8 @@ var SKY_COLOR = "rgb(87, 238, 255)"
 var GRASS_COLOR = "rgb(59, 217, 15)"
 var DIRT_COLOR = "rgb(87, 51, 2)"
 var BLACK = "rgb(0, 0, 0)"
+var ROCK_COLOR = "rgb(70, 70, 70)"
+var ROCK_OFFSET = 8
 
 module.exports = createSurfaces
 
@@ -18,12 +20,18 @@ function createSurfaces(opts) {
     var ceiling = opts.ceiling || 20
     var mapSize = opts.mapSize || 100
     var generateChunks = perlinTerrain(uuid(), null, ceiling)
-    var grassChunks = generateChunks({ x: -(mapSize), y: 0 }, mapSize * 2)
+    var start = { x: -(mapSize), y: 0 }
+    var grassChunks = generateChunks(start, mapSize * 2)
+    var rockChunks = generateChunks(start, mapSize * 2).map(function (chunk) {
+        chunk.y -= ROCK_OFFSET
+        return chunk
+    })
 
     for (var i = 0; i < grassChunks.length; i++) {
         var left = Math.max(0, i - 1)
         var right = Math.min(grassChunks.length - 1, i + 1)
         var point = grassChunks[i]
+        var rockChunkY = rockChunks[i].y
 
         var grassPoint = Math.min(grassChunks[left].y,
             point.y, grassChunks[right].y)
@@ -31,23 +39,25 @@ function createSurfaces(opts) {
         var maxGrass = Math.max(point.y, grassPoint)
 
         minGrass < maxGrass && minGrass++
-        for (var j = -(ceiling); j <= maxGrass; j++) {
-            var color = j < minGrass ? DIRT_COLOR :
+        for (var j = -(ceiling); j <= Math.max(maxGrass, rockChunkY); j++) {
+            var color = j <= rockChunkY ? ROCK_COLOR :
+                j < minGrass ? DIRT_COLOR :
                 j > maxGrass ? SKY_COLOR : GRASS_COLOR
-            var outline = j > maxGrass ? undefined : BLACK
 
             surfaces.push(SurfaceDB.Rectangle({
                 x: point.x * chunkSize,
                 y: -(j * chunkSize),
                 width: chunkSize,
                 height: chunkSize,
-                meta: { color: color, outline: outline }
+                meta: { color: color, outline: BLACK }
             }))
         }
     }
 
     return {
-        grassChunks: grassChunks,
+        boundaryChunks: grassChunks.map(function (chunk, index) {
+            return chunk.y > rockChunks[index].y ? chunk : rockChunks[index]
+        }),
         surfaces: surfaces
     }
 }

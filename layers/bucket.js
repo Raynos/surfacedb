@@ -129,7 +129,9 @@ function BucketLayer(opts) {
     function point(opts, callback) {
         var bucket = buckets[bucketIndex(opts.x, opts.y)] || {}
 
-        callback(null, Object.keys(bucket).map(function (key) {
+        callback(null, Object.keys(bucket).filter(function (k) {
+            return k !== "keys"
+        }).map(function (key) {
             return items[key]
         }).filter(function (surface) {
             return pointInSurface(opts, surface)

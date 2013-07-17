@@ -1,9 +1,6 @@
 var kb = require("kb-controls")
 var EventEmitter = require("events").EventEmitter
 
-var CONSTANTS = require("./constants.js")
-var SPEED = CONSTANTS.SPEED
-
 var KEYS_MAP = {
     "<left>": "left",
     "<right>": "right",
@@ -23,10 +20,10 @@ function Inputs(window) {
     var controls = kb(window, KEYS_MAP, function oninput() {
         var x = 0, y = 0
         if (controls.left || controls.right) {
-            x = (controls.left ? -1 : 1) * SPEED
+            x = (controls.left ? -1 : 1)
         }
         if (controls.up || controls.down) {
-            y = (controls.up ? -1 : 1) * SPEED
+            y = (controls.up ? -1 : 1)
         }
 
         emitter.emit("move", { x: x, y: y })
