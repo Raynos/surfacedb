@@ -1,5 +1,5 @@
-var Observable = require("observ")
-var SurfaceDB = require("../index.js")
+var computed = require("observ/computed")
+var SurfaceDB = require("../../index.js")
 
 var CONSTANTS = require("./constants")
 var WIDTH = CONSTANTS.WIDTH
@@ -19,16 +19,7 @@ function Display(database, viewModel) {
         width: WIDTH,
         height: HEIGHT,
         blankColor: SKY_COLOR
-    }, map(viewModel.camera, SurfaceDB.Rectangle))
+    }, computed([viewModel.camera], SurfaceDB.Rectangle))
 
     return { view: canvas }
-}
-
-// map := (Observable<A>, (A) => B) => Observable<B>
-function map(source, lambda) {
-    var obs = Observable(lambda(source()))
-    source(function (a) {
-        obs.set(lambda(a))
-    })
-    return obs
 }

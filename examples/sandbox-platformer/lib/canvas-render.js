@@ -13,6 +13,12 @@ function CanvasRender(db, opts, viewport) {
     canvas.style.border = "solid 1px black"
     var context = canvas.getContext("2d")
 
+
+    // var SURFACES
+    // db.region(viewport(), function (err, surfaces) {
+    //     SURFACES = surfaces
+    // })
+
     raf(ondraw)
 
     function ondraw() {
@@ -20,6 +26,7 @@ function CanvasRender(db, opts, viewport) {
         context.fillRect(0, 0, opts.width, opts.height)
 
         db.region(viewport(), render)
+        // render(null, SURFACES)
         raf(ondraw)
     }
 

@@ -4,7 +4,8 @@ var ecstatic = require("ecstatic")
 var ServeBrowserify = require("serve-browserify")
 
 var serveJS = ServeBrowserify({
-    root: __dirname
+    root: __dirname,
+    debug: true
 })
 var serveStatic = ecstatic({
     root: path.join(__dirname, "static")

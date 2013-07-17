@@ -1,7 +1,7 @@
 var noise = require("perlin").noise
 var uuid = require("uuid")
 
-var SurfaceDB = require("../../index.js")
+var SurfaceDB = require("../../../index.js")
 
 var SKY_COLOR = "rgb(87, 238, 255)"
 var GRASS_COLOR = "rgb(59, 217, 15)"
@@ -18,14 +18,15 @@ function createSurfaces(opts) {
     var ceiling = opts.ceiling || 20
     var mapSize = opts.mapSize || 100
     var generateChunks = perlinTerrain(uuid(), null, ceiling)
-    var chunks = generateChunks({ x: -(mapSize), y: 0 }, mapSize * 2)
+    var grassChunks = generateChunks({ x: -(mapSize), y: 0 }, mapSize * 2)
 
-    for (var i = 0; i < chunks.length; i++) {
+    for (var i = 0; i < grassChunks.length; i++) {
         var left = Math.max(0, i - 1)
-        var right = Math.min(chunks.length - 1, i + 1)
-        var point = chunks[i]
+        var right = Math.min(grassChunks.length - 1, i + 1)
+        var point = grassChunks[i]
 
-        var grassPoint = Math.min(chunks[left].y, point.y, chunks[right].y)
+        var grassPoint = Math.min(grassChunks[left].y,
+            point.y, grassChunks[right].y)
         var minGrass = Math.min(point.y, grassPoint)
         var maxGrass = Math.max(point.y, grassPoint)
 
@@ -45,7 +46,10 @@ function createSurfaces(opts) {
         }
     }
 
-    return surfaces
+    return {
+        grassChunks: grassChunks,
+        surfaces: surfaces
+    }
 }
 
 function perlinTerrain(seed, floor, ceiling, divisor) {

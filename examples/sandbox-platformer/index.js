@@ -1,6 +1,6 @@
 var window = require("global/window")
 var document = require("global/document")
-var SurfaceDB = require("../index.js")
+var SurfaceDB = require("../../index.js")
 
 var Inputs = require("./inputs.js")
 var Game = require("./game.js")
@@ -27,10 +27,7 @@ document.body.appendChild(app.view)
 
 function App(db) {
     var inputs = Inputs(window)
-
-    // game ??
     var viewModel = Game(db, inputs)
-
     var display = Display(db, viewModel)
 
     return display
