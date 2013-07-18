@@ -17,10 +17,14 @@ module.exports = Display
     ) => { view: DOMElement }
 */
 function Display(database, viewModel) {
-    var canvas = CanvasRender(simpleCache(database.layer("main"), {
-        deltaX: 128,
-        deltaY: 128
-    }), {
+    var layer = database.layer("main")
+
+    // layer = simpleCache(layer, {
+    //     deltaX: 32,
+    //     deltaY: 32
+    // })
+
+    var canvas = CanvasRender(layer, {
         width: WIDTH,
         height: HEIGHT,
         blankColor: SKY_COLOR

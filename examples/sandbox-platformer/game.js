@@ -65,20 +65,39 @@ function Game(db, inputs) {
 
     viewModel.player(function (player) {
         var world = viewModel.world()
-        if (Math.abs(player.x - world.minX) < GENERATION_DISTANCE) {
-            world.minX -= MAP_SIZE
-        } else if (Math.abs(player.x - world.maxX) < GENERATION_DISTANCE) {
-            world.maxX += MAP_SIZE
+        if (Math.abs(player.x - world.minX * SIZE) < GENERATION_DISTANCE) {
+            viewModel.world.set({
+                minX: world.minX - MAP_SIZE * 2,
+                maxX: world.maxX
+            })
+        } else if (Math.abs(player.x - world.maxX * SIZE) <
+            GENERATION_DISTANCE
+        ) {
+            viewModel.world.set({
+                minX: world.minX,
+                maxX: world.maxX + MAP_SIZE * 2
+            })
         }
 
-        viewModel.world.set(world)
+
     })
 
-    // accumulate(viewModel.world, function (prevWorld, currWorld) {
+    accumulate(viewModel.world, function (prevWorld, currWorld) {
+        var box = {}
+        if (prevWorld.minX > currWorld.minX) {
+            box.minX = currWorld.minX
+            box.maxX = prevWorld.minX
+        } else if (prevWorld.maxX < currWorld.maxX) {
+            box.minX = prevWorld.maxX
+            box.maxX = currWorld.maxX
+        }
 
+        if (box.minX && box.maxX) {
+            generateTerrain(main, box, worldSeed)
+        }
 
-    //     return currWorld
-    // })
+        return currWorld
+    })
 
     viewModel.player(function (player) {
         // var camera = viewModel.camera()
