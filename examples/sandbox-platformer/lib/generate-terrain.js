@@ -22,13 +22,14 @@ function createSurfaces(opts) {
     var seed = opts.seed || Math.floor(Math.random() * 1000)
 
     var distance = boundingBox.maxX - boundingBox.minX
-    var generateChunks = perlinTerrain(seed, null, ceiling)
+    var generateChunks = perlinTerrain(null, ceiling)
     var start = { x: boundingBox.minX, y: 0 }
-    var grassChunks = generateChunks(start, distance)
-    var rockChunks = generateChunks(start, distance).map(function (chunk) {
-        chunk.y -= ROCK_OFFSET
-        return chunk
-    })
+    var grassChunks = generateChunks(seed, start, distance)
+    var rockChunks = generateChunks(seed + 100, start, distance)
+        .map(function (chunk) {
+            chunk.y -= ROCK_OFFSET
+            return chunk
+        })
 
     for (var i = 0; i < grassChunks.length; i++) {
         var left = Math.max(0, i - 1)
@@ -65,13 +66,13 @@ function createSurfaces(opts) {
     }
 }
 
-function perlinTerrain(seed, floor, ceiling, divisor) {
+function perlinTerrain(floor, ceiling, divisor) {
     floor = floor || 0
     ceiling = ceiling || 20 // minecraft's limit
     divisor = divisor || 50
     // noise.seed(seed)
 
-    return function generateChunk(position, width) {
+    return function generateChunk(seed, position, width) {
         var line = seed
         var chunks = []
         var startX = position.x
