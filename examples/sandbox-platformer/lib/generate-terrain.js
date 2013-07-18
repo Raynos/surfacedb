@@ -3,11 +3,6 @@ var noise = require("perlin").noise
 
 var SurfaceDB = require("../../../index.js")
 
-var SKY_COLOR = "rgb(87, 238, 255)"
-var GRASS_COLOR = "rgb(59, 217, 15)"
-var DIRT_COLOR = "rgb(87, 51, 2)"
-var BLACK = "rgb(0, 0, 0)"
-var ROCK_COLOR = "rgb(70, 70, 70)"
 var ROCK_OFFSET = 8
 
 module.exports = createSurfaces
@@ -44,16 +39,16 @@ function createSurfaces(opts) {
 
         minGrass < maxGrass && minGrass++
         for (var j = -(ceiling); j <= Math.max(maxGrass, rockChunkY); j++) {
-            var color = j <= rockChunkY ? ROCK_COLOR :
-                j < minGrass ? DIRT_COLOR :
-                j > maxGrass ? SKY_COLOR : GRASS_COLOR
+            var type = j <= rockChunkY ? "rock" :
+                j < minGrass ? "dirt" :
+                j > maxGrass ? "sky" : "grass"
 
             surfaces.push(SurfaceDB.Rectangle({
                 x: point.x * chunkSize,
                 y: -(j * chunkSize),
                 width: chunkSize,
                 height: chunkSize,
-                meta: { color: color, outline: BLACK }
+                meta: { type: type }
             }))
         }
     }

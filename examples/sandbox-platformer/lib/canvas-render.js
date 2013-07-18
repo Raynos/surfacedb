@@ -13,6 +13,13 @@ function CanvasRender(db, opts, viewport) {
     canvas.style.border = "solid 1px black"
     var context = canvas.getContext("2d")
 
+    var textures = {
+        grass: createBlock(opts.grass),
+        dirt: createBlock(opts.dirt),
+        rock: createBlock(opts.rock),
+        entity: createBlock(opts.entity)
+    }
+
     raf(ondraw)
 
     function ondraw() {
@@ -37,8 +44,7 @@ function CanvasRender(db, opts, viewport) {
             var width = surface.meta.width
             var height = surface.meta.height
 
-            context.fillStyle = surface.meta.color
-            context.fillRect(x, y, width, height)
+            context.putImageData(textures[surface.meta.type], x, y)
 
             if (surface.meta.outline) {
                 context.strokeStyle = surface.meta.outline
@@ -47,5 +53,31 @@ function CanvasRender(db, opts, viewport) {
         }
     }
 
+    return canvas
+}
+
+function createBlock(opts) {
+    return blockBuffer(opts.width, opts.height, opts.color, opts.outline)
+}
+
+function blockBuffer(width, height, color, outline) {
+    var canvas = createCanvas(width, height)
+    var context = canvas.getContext("2d")
+
+    context.fillStyle = color
+    context.fillRect(0, 0, width, height)
+
+    if (outline) {
+        context.strokeStyle = outline
+        context.strokeRect(0, 0, width, height)
+    }
+
+    return context.getImageData(0, 0, width, height)
+}
+
+function createCanvas(width, height) {
+    var canvas = document.createElement("canvas")
+    canvas.width = width
+    canvas.height = height
     return canvas
 }
