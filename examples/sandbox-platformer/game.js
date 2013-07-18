@@ -15,6 +15,7 @@ var JUMP_SPEED = CONSTANTS.JUMP_SPEED
 var GRAVITY = CONSTANTS.GRAVITY
 var TERMINAL_VELOCITY = CONSTANTS.TERMINAL_VELOCITY
 var GENERATION_DISTANCE = CONSTANTS.GENERATION_DISTANCE
+var CAMERA_BOUNDS = CONSTANTS.CAMERA_BOUNDS
 
 var createTerrain = require("./lib/generate-terrain.js")
 var persist = require("./lib/persist-entity.js")
@@ -78,8 +79,6 @@ function Game(db, inputs) {
                 maxX: world.maxX + MAP_SIZE * 2
             })
         }
-
-
     })
 
     accumulate(viewModel.world, function (prevWorld, currWorld) {
@@ -100,9 +99,21 @@ function Game(db, inputs) {
     })
 
     viewModel.player(function (player) {
-        // var camera = viewModel.camera()
+        var camera = viewModel.camera()
         // // var deltaX =
         // // var deltaY =
+
+        if (player.x < camera.x + WIDTH * CAMERA_BOUNDS) {
+            camera.x = player.x - WIDTH * CAMERA_BOUNDS
+        } else if (player.y < camera.y + HEIGHT * CAMERA_BOUNDS) {
+            camera.y = player.y - HEIGHT * CAMERA_BOUNDS
+        }
+
+        if (player.x > camera.x + WIDTH * (1 - CAMERA_BOUNDS)) {
+            camera.x = player.x - WIDTH * (1 - CAMERA_BOUNDS)
+        } else if (player.y > camera.y + HEIGHT * (1 - CAMERA_BOUNDS)) {
+            camera.y = player.y - HEIGHT * (1 - CAMERA_BOUNDS)
+        }
 
         // if (player.x < camera.x - WIDTH / 4) {
         //     camera.x = player.x - WIDTH / 4
@@ -117,8 +128,8 @@ function Game(db, inputs) {
         // }
 
         viewModel.camera.set({
-            x: player.x - (WIDTH / 2),
-            y: player.y - (HEIGHT / 2),
+            x: camera.x,
+            y: camera.y,
             width: WIDTH + (SIZE * 2),
             height: HEIGHT + (SIZE * 2)
         })
