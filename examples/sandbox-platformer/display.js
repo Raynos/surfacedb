@@ -1,6 +1,8 @@
 var computed = require("observ/computed")
 var SurfaceDB = require("../../index.js")
 
+var simpleCache = require("../../lib/surface-simple-cache.js")
+
 var CONSTANTS = require("./constants")
 var WIDTH = CONSTANTS.WIDTH
 var HEIGHT = CONSTANTS.HEIGHT
@@ -15,7 +17,10 @@ module.exports = Display
     ) => { view: DOMElement }
 */
 function Display(database, viewModel) {
-    var canvas = CanvasRender(database.layer("main"), {
+    var canvas = CanvasRender(simpleCache(database.layer("main"), {
+        deltaX: 128,
+        deltaY: 128
+    }), {
         width: WIDTH,
         height: HEIGHT,
         blankColor: SKY_COLOR
