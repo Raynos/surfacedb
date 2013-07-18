@@ -1,7 +1,7 @@
 var noise = require("perlin").noise
 var uuid = require("uuid")
 
-var SurfaceDB = require("../../index.js")
+var SurfaceDB = require("../../../index.js")
 
 var SKY_COLOR = "rgb(87, 238, 255)"
 var GRASS_COLOR = "rgb(59, 217, 15)"

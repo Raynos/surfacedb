@@ -5,7 +5,7 @@ var kb = require("kb-controls")
 
 var CanvasRender = require("./lib/canvas-render.js")
 var createTerrain = require("./lib/generate-terrain.js")
-var SurfaceDB = require("../index.js")
+var SurfaceDB = require("../../index.js")
 
 var WIDTH = 640
 var HEIGHT = 480
