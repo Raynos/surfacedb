@@ -6,10 +6,7 @@ function Rectangle(opts) {
     meta.y = opts.y
     meta.width = opts.width
     meta.height = opts.height
-    meta.bb = {
-        min: { x: opts.x, y: opts.y },
-        max: { x: opts.x + opts.width, y: opts.y + opts.height }
-    }
+    meta.bb = boundingBox(opts)
     var points = [{
         x: opts.x,
         y: opts.y
@@ -27,5 +24,12 @@ function Rectangle(opts) {
     return {
         points: points,
         meta: meta
+    }
+}
+
+function boundingBox(opts) {
+    return {
+        min: { x: opts.x, y: opts.y },
+        max: { x: opts.x + opts.width, y: opts.y + opts.height }
     }
 }
