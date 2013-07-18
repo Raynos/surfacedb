@@ -1,5 +1,5 @@
 var Observable = require("observ")
-var computed = require("observ/computed")
+// var computed = require("observ/computed")
 var SurfaceDB = require("../../index.js")
 
 var CONSTANTS = require("./constants")
@@ -14,6 +14,7 @@ var SPEED = CONSTANTS.SPEED
 var JUMP_SPEED = CONSTANTS.JUMP_SPEED
 var GRAVITY = CONSTANTS.GRAVITY
 var TERMINAL_VELOCITY = CONSTANTS.TERMINAL_VELOCITY
+var GENERATION_DISTANCE = CONSTANTS.GENERATION_DISTANCE
 
 var createTerrain = require("./lib/generate-terrain.js")
 var persist = require("./lib/persist-entity.js")
@@ -26,7 +27,12 @@ function Game(db, inputs) {
         sceneGraph: "bucket"
     })
 
-    var boundaryChunks = initTerrain(main)
+    var worldSeed = Math.floor(Math.random() * 1000)
+    var world = Observable({
+        minX: -MAP_SIZE,
+        maxX: MAP_SIZE
+    })
+    var boundaryChunks = generateTerrain(main, world(), worldSeed)
     var boundary = boundaryChunks[MAP_SIZE]
 
     var player = Observable({
@@ -44,19 +50,60 @@ function Game(db, inputs) {
         }
     })
 
-    persist(main, player, SurfaceDB.Rectangle)
-
     var viewModel = {
-        camera: computed([player], function (player) {
-            return {
-                x: player.x - (WIDTH / 2),
-                y: player.y - (HEIGHT / 2),
-                width: WIDTH + (SIZE * 2),
-                height: HEIGHT + (SIZE * 2)
-            }
+        camera: Observable({
+            x: player().x - (WIDTH / 2),
+            y: player().y - (HEIGHT / 2),
+            width: WIDTH + (SIZE * 2),
+            height: HEIGHT + (SIZE * 2)
         }),
+        world: world,
         player: player
     }
+
+    persist(main, player, SurfaceDB.Rectangle)
+
+    viewModel.player(function (player) {
+        var world = viewModel.world()
+        if (Math.abs(player.x - world.minX) < GENERATION_DISTANCE) {
+            world.minX -= MAP_SIZE
+        } else if (Math.abs(player.x - world.maxX) < GENERATION_DISTANCE) {
+            world.maxX += MAP_SIZE
+        }
+
+        viewModel.world.set(world)
+    })
+
+    // accumulate(viewModel.world, function (prevWorld, currWorld) {
+
+
+    //     return currWorld
+    // })
+
+    viewModel.player(function (player) {
+        // var camera = viewModel.camera()
+        // // var deltaX =
+        // // var deltaY =
+
+        // if (player.x < camera.x - WIDTH / 4) {
+        //     camera.x = player.x - WIDTH / 4
+        // } else if (player.x > camera.x + WIDTH / 4) {
+        //     camera.x = player.x - (3 * WIDTH / 4)
+        // }
+
+        // if (player.y < camera.y - HEIGHT / 4) {
+        //     camera.y = player.y - HEIGHT / 4
+        // } else if (player.y > camera.y + HEIGHT / 4) {
+        //     camera.y = player.y - (3 * HEIGHT / 4)
+        // }
+
+        viewModel.camera.set({
+            x: player.x - (WIDTH / 2),
+            y: player.y - (HEIGHT / 2),
+            width: WIDTH + (SIZE * 2),
+            height: HEIGHT + (SIZE * 2)
+        })
+    })
 
     inputs.on("move", function (changes) {
         var player = viewModel.player()
@@ -94,11 +141,23 @@ function Game(db, inputs) {
     return viewModel
 }
 
-function initTerrain(db) {
+function accumulate(obs, lambda, initial) {
+    initial = initial || obs()
+    var result = Observable(initial)
+
+    obs(function (value) {
+        result.set(lambda(result(), value))
+    })
+
+    return result
+}
+
+function generateTerrain(db, world, seed) {
     var terrain = createTerrain({
         chunkSize: SIZE,
         ceiling: TERRAIN_HEIGHT,
-        mapSize: MAP_SIZE
+        boundingBox: world,
+        seed: seed
     })
     db.insert(terrain.surfaces)
 

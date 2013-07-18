@@ -1,5 +1,5 @@
 var noise = require("perlin").noise
-var uuid = require("uuid")
+// var uuid = require("uuid")
 
 var SurfaceDB = require("../../../index.js")
 
@@ -18,11 +18,14 @@ function createSurfaces(opts) {
 
     var surfaces = []
     var ceiling = opts.ceiling || 20
-    var mapSize = opts.mapSize || 100
-    var generateChunks = perlinTerrain(uuid(), null, ceiling)
-    var start = { x: -(mapSize), y: 0 }
-    var grassChunks = generateChunks(start, mapSize * 2)
-    var rockChunks = generateChunks(start, mapSize * 2).map(function (chunk) {
+    var boundingBox = opts.boundingBox || { minX: -100, maxX: 100 }
+    var seed = opts.seed || Math.floor(Math.random() * 1000)
+
+    var distance = boundingBox.maxX - boundingBox.minX
+    var generateChunks = perlinTerrain(seed, null, ceiling)
+    var start = { x: boundingBox.minX, y: 0 }
+    var grassChunks = generateChunks(start, distance)
+    var rockChunks = generateChunks(start, distance).map(function (chunk) {
         chunk.y -= ROCK_OFFSET
         return chunk
     })
@@ -66,10 +69,10 @@ function perlinTerrain(seed, floor, ceiling, divisor) {
     floor = floor || 0
     ceiling = ceiling || 20 // minecraft's limit
     divisor = divisor || 50
-    noise.seed(seed)
+    // noise.seed(seed)
 
     return function generateChunk(position, width) {
-        var line = Math.floor(Math.random() * 1000)
+        var line = seed
         var chunks = []
         var startX = position.x
 
